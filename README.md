@@ -1,5 +1,9 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+# Fantasy Hockey Comparison Tool
+
+Helps compare how many games left a team or player has that week so you know who to add/drop on the fly
+
 ## Available Scripts
 
 In the project directory, you can run:
