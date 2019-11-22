@@ -12,9 +12,12 @@ function App() {
   const [ playerName, setPlayerName ] = useState('');
   const [ playerFullName, setPlayerFullName ] = useState('');
 
+  const START_DATE = getStartDate();
+  const END_DATE = '2019-11-24';
+
   // get remaining games left in the week
   useEffect(() => {
-    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?startDate=${getStartDate()}&endDate=2019-11-24`)
+    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?startDate=${START_DATE}&endDate=${END_DATE}`)
       .then(res => res.json())
       .then(data => setRemainingGames(data.totalGames))
       .catch(err => setRemainingGames(`An error occurred: ${err.message || err}`));
@@ -34,7 +37,7 @@ function App() {
         );
         if (team[0]) {
           setFullTeamName(team[0].name);
-          fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${getStartDate()}&endDate=2019-11-24`)
+          fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${START_DATE}&endDate=${END_DATE}`)
             .then(res => res.json())
             .then(response => setTeamData(response.totalGames))
             .catch(err => setRemainingGames(`An error occurred: ${err.message || err}`));
@@ -49,33 +52,48 @@ function App() {
     fetch(`https://statsapi.web.nhl.com/api/v1/teams/?expand=team.roster`)
       .then(res => res.json())
       .then(data => {
-        console.log('data: ', data.teams.find(roster => {
-          console.log('franchise: ', roster.franchise.teamName);
-          console.log('roster: ', roster.roster.roster.map(player => {
-            console.log('player: ', player.person.fullName);
-          }));
-        }));
+        data.teams.find(roster => {
+          roster.roster.roster.find(player => {
+            if (playerName === player.person.fullName) {
+              const playerId = player.person.id;
+
+              fetch(`https://statsapi.web.nhl.com/api/v1/people/${playerId}`)
+                .then(res => res.json())
+                .then(data => {
+                  data.people.find(teamName => {
+                    const currentTeamId = teamName.currentTeam.id;
+                    const currentTeamName = teamName.currentTeam.name;
+
+                    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${START_DATE}&endDate=2019-11-24`)
+                      .then(res => res.json())
+                      .then(data => {
+                        setFullTeamName(currentTeamName);
+                        setTeamData(data.totalGames);
+                      });
+
+                      return null;
+                  });
+                });
+            }
+
+            return null;
+          });
+
+          return null;
+        });
       })
       .catch(err => console.log('err: ', err));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerFullName]);
 
   function getStartDate() {
     return new Date().toJSON().slice(0,10);
   }
 
-  function handleTeamChange(event) {
-    setTeamData(null);
-    setErrorMessage(null);
-    setTeamName(event.target.value);
-  }
-
-  function handlePlayerChange(event) {
-    setPlayerName(event.target.value);
-  }
-
   useEffect(() => {
     const today = new Date().toString();
     const day = today.split(' ');
+
     switch (day[0]) {
       case "Mon":
         setDaysLeft(7);
@@ -101,30 +119,44 @@ function App() {
     }
   }, [])
 
-  function handleSubmit(event) {
+  function handleTeamChange(event) {
+    setTeamData(null);
+    setErrorMessage(null);
+    setPlayerName('');
+    setTeamName(event.target.value);
+  }
+
+  function handlePlayerChange(event) {
+    setTeamData(null);
+    setErrorMessage(null);
+    setTeamName('');
+    setPlayerName(event.target.value);
+  }
+
+  function handleTeamSubmit(event) {
     event.preventDefault();
     setErrorMessage(null);
+    setTeamId(teamName);
+  }
 
-    if (teamName.length > 0) {
-      setTeamId(teamName);
-    }
-
-    if (playerName.length > 0) {
-      setPlayerFullName(playerName);
-    }
+  function handlePlayerSubmit(event) {
+    event.preventDefault();
+    setErrorMessage(null);
+    setPlayerFullName(playerName);
   }
 
   return (
     <div className="app">
       <h1>Fantasy Hockey Add/Drop Comparison Tool</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={teamName ? handleTeamSubmit : handlePlayerSubmit}>
         <div className="form">
           <p>Team Name: </p>
           <input className="input" type="text" name="teamName" value={teamName} onChange={handleTeamChange} />
+          <button className="submitButton" type="button" onClick={handleTeamSubmit}>Team Search</button>
           <p>Player Name: </p>
           <input className="input" type="text" name="playerName" value={playerName} onChange={handlePlayerChange} />
+          <button className="submitButton" type="button" onClick={handlePlayerSubmit}>Player Search</button>
         </div>
-          <button type="button" onClick={handleSubmit}>Search</button>
       </form>
       {daysLeft && (
         <p>Remaining days left in the fantasy hockey week: {daysLeft}</p>
