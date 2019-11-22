@@ -1,26 +1,28 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
 
 function App() {
-  const [ teamName, setTeamName ] = useState('');
-  const [ fullTeamName, setFullTeamName ] = useState();
-  const [ teamData, setTeamData ] = useState();
-  const [ remainingGames, setRemainingGames ] = useState();
-  const [ teamId, setTeamId ] = useState();
-  const [ daysLeft, setDaysLeft ] = useState();
-  const [ errorMessage, setErrorMessage ] = useState('');
-  const [ playerName, setPlayerName ] = useState('');
-  const [ playerFullName, setPlayerFullName ] = useState('');
+  const [teamName, setTeamName] = useState("");
+  const [fullTeamName, setFullTeamName] = useState();
+  const [teamData, setTeamData] = useState();
+  const [remainingGames, setRemainingGames] = useState();
+  const [teamId, setTeamId] = useState();
+  const [daysLeft, setDaysLeft] = useState();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [playerName, setPlayerName] = useState("");
+  const [playerFullName, setPlayerFullName] = useState("");
 
   const START_DATE = getStartDate();
-  const END_DATE = '2019-11-24';
+  const END_DATE = "2019-11-24";
 
   // get remaining games left in the week
   useEffect(() => {
-    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?startDate=${START_DATE}&endDate=${END_DATE}`)
+    fetch(
+      `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${START_DATE}&endDate=${END_DATE}`
+    )
       .then(res => res.json())
       .then(data => setRemainingGames(data.totalGames))
-      .catch(err => setRemainingGames(`An error occurred: ${err.message || err}`));
+      .catch(err => setRemainingGames(`An error occurred: ${err.u || err}`));
   }, []);
 
   // find all the teams to get their respective teamId
@@ -28,24 +30,29 @@ function App() {
   useEffect(() => {
     fetch(`https://statsapi.web.nhl.com/api/v1/teams`)
       .then(res => res.json())
-      .then(response => {
-        const team = response.teams.filter(team =>
-          (team.locationName === teamName) ||
-          (team.abbreviation === teamName) ||
-          (team.name === teamName) ||
-          (team.teamName === teamName)
+      .then(data => {
+        const team = data.teams.filter(
+          team =>
+            team.locationName === teamName ||
+            team.abbreviation === teamName ||
+            team.name === teamName ||
+            team.teamName === teamName
         );
-        if (team[0]) {
+        if (team.length > 0) {
           setFullTeamName(team[0].name);
-          fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${START_DATE}&endDate=${END_DATE}`)
+          fetch(
+            `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${START_DATE}&endDate=${END_DATE}`
+          )
             .then(res => res.json())
-            .then(response => setTeamData(response.totalGames))
-            .catch(err => setRemainingGames(`An error occurred: ${err.message || err}`));
+            .then(data => setTeamData(data.totalGames))
+            .catch(err =>
+              setRemainingGames(`An error occurred: ${err.message || err}`)
+            );
         } else if (teamName.length > 0) {
-          setErrorMessage('Did not find that team');
+          setErrorMessage("Did not find that team");
         }
       });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId]);
 
   useEffect(() => {
@@ -64,14 +71,16 @@ function App() {
                     const currentTeamId = teamName.currentTeam.id;
                     const currentTeamName = teamName.currentTeam.name;
 
-                    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${START_DATE}&endDate=2019-11-24`)
+                    fetch(
+                      `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${START_DATE}&endDate=2019-11-24`
+                    )
                       .then(res => res.json())
                       .then(data => {
                         setFullTeamName(currentTeamName);
                         setTeamData(data.totalGames);
                       });
 
-                      return null;
+                    return null;
                   });
                 });
             }
@@ -82,17 +91,17 @@ function App() {
           return null;
         });
       })
-      .catch(err => console.log('err: ', err));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      .catch(err => console.log("err: ", err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playerFullName]);
 
   function getStartDate() {
-    return new Date().toJSON().slice(0,10);
+    return new Date().toJSON().slice(0, 10);
   }
 
   useEffect(() => {
     const today = new Date().toString();
-    const day = today.split(' ');
+    const day = today.split(" ");
 
     switch (day[0]) {
       case "Mon":
@@ -117,19 +126,19 @@ function App() {
         setDaysLeft(1);
         break;
     }
-  }, [])
+  }, []);
 
   function handleTeamChange(event) {
     setTeamData(null);
     setErrorMessage(null);
-    setPlayerName('');
+    setPlayerName("");
     setTeamName(event.target.value);
   }
 
   function handlePlayerChange(event) {
     setTeamData(null);
     setErrorMessage(null);
-    setTeamName('');
+    setTeamName("");
     setPlayerName(event.target.value);
   }
 
@@ -151,11 +160,35 @@ function App() {
       <form onSubmit={teamName ? handleTeamSubmit : handlePlayerSubmit}>
         <div className="form">
           <p>Team Name: </p>
-          <input className="input" type="text" name="teamName" value={teamName} onChange={handleTeamChange} />
-          <button className="submitButton" type="button" onClick={handleTeamSubmit}>Team Search</button>
+          <input
+            className="input"
+            type="text"
+            name="teamName"
+            value={teamName}
+            onChange={handleTeamChange}
+          />
+          <button
+            className="submitButton"
+            type="button"
+            onClick={handleTeamSubmit}
+          >
+            Team Search
+          </button>
           <p>Player Name: </p>
-          <input className="input" type="text" name="playerName" value={playerName} onChange={handlePlayerChange} />
-          <button className="submitButton" type="button" onClick={handlePlayerSubmit}>Player Search</button>
+          <input
+            className="input"
+            type="text"
+            name="playerName"
+            value={playerName}
+            onChange={handlePlayerChange}
+          />
+          <button
+            className="submitButton"
+            type="button"
+            onClick={handlePlayerSubmit}
+          >
+            Player Search
+          </button>
         </div>
       </form>
       {daysLeft && (
@@ -165,11 +198,11 @@ function App() {
         <p>Remaining NHL games left in the week: {remainingGames}</p>
       )}
       {teamData && (
-        <p>{fullTeamName} remaining games left in the week: {teamData}</p>
+        <p>
+          {fullTeamName} remaining games left in the week: {teamData}
+        </p>
       )}
-      {errorMessage && (
-        <p>{errorMessage}</p>
-      )}
+      {errorMessage && <p>{errorMessage}</p>}
     </div>
   );
 }
