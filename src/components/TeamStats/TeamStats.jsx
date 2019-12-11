@@ -1,16 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
+import { TeamContext } from '../../context/TeamContext';
 
 TeamStats.propTypes = {};
 
 export default function TeamStats() {
   const [gameInfo, setGameInfo] = useState([]);
+  const { teamNameContext, setTeamNameContext } = useContext(TeamContext);
+  const { teamIdContext, setTeamIdContext } = useContext(TeamContext);
+
+  console.log('teamNameContext: ', teamNameContext);
+  console.log('teamIdContext: ', teamIdContext);
+
 
   useEffect(() => {
     fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=1&startDate=2019-12-10&endDate=2019-12-15`)
       .then(res => res.json())
       .then(res => {
         res.dates.map(dates => {
+          console.log('topher');
           console.log('dates: ', dates.date);
           let obj = {};
 
@@ -39,7 +47,7 @@ export default function TeamStats() {
         })
       })
       .catch(console.log)
-  }, [])
+  }, [teamNameContext])
 
   return (
     <div>

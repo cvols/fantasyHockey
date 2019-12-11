@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Accordion, TeamStats } from '../../components';
+import { Accordion, TeamStats, SearchForm } from '../../components';
 import './Home.css';
 
 function Home() {
@@ -30,38 +30,38 @@ function Home() {
       );
   }, [START_DATE, END_DATE]);
 
-  // find all the teams to get their respective teamId
-  // then find remaining games left by teamId
-  useEffect(() => {
-    fetch(`https://statsapi.web.nhl.com/api/v1/teams`)
-      .then(res => res.json())
-      .then(response => {
-        const team = response.teams.filter(
-          team =>
-            team.locationName === teamName ||
-            team.abbreviation === teamName ||
-            team.name === teamName ||
-            team.teamName === teamName
-        );
-        if (team[0]) {
-          setFullTeamName(team[0].name);
-          fetch(
-            `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${START_DATE}&endDate=${END_DATE}`
-          )
-            .then(res => res.json())
-            .then(response => {
-              console.log('response: ', response);
-              setTeamData(response.totalGames);
-            })
-            .catch(err =>
-              setRemainingGames(`An error occurred: ${err.message || err}`)
-            );
-        } else if (teamName.length > 0) {
-          setErrorMessage('Did not find that team');
-        }
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [teamId]);
+  // // find all the teams to get their respective teamId
+  // // then find remaining games left by teamId
+  // useEffect(() => {
+  //   fetch(`https://statsapi.web.nhl.com/api/v1/teams`)
+  //     .then(res => res.json())
+  //     .then(response => {
+  //       const team = response.teams.filter(
+  //         team =>
+  //           team.locationName === teamName ||
+  //           team.abbreviation === teamName ||
+  //           team.name === teamName ||
+  //           team.teamName === teamName
+  //       );
+  //       if (team[0]) {
+  //         setFullTeamName(team[0].name);
+  //         fetch(
+  //           `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${START_DATE}&endDate=${END_DATE}`
+  //         )
+  //           .then(res => res.json())
+  //           .then(response => {
+  //             console.log('response: ', response);
+  //             setTeamData(response.totalGames);
+  //           })
+  //           .catch(err =>
+  //             setRemainingGames(`An error occurred: ${err.message || err}`)
+  //           );
+  //       } else if (teamName.length > 0) {
+  //         setErrorMessage('Did not find that team');
+  //       }
+  //     });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [teamId]);
 
   useEffect(() => {
     fetch(`https://statsapi.web.nhl.com/api/v1/teams/?expand=team.roster`)
@@ -136,36 +136,37 @@ function Home() {
     }
   }, []);
 
-  function handleTeamChange(event) {
-    setTeamData(null);
-    setErrorMessage(null);
-    setPlayerName('');
-    setTeamName(event.target.value);
-  }
+  // function handleTeamChange(event) {
+  //   setTeamData(null);
+  //   setErrorMessage(null);
+  //   setPlayerName('');
+  //   setTeamName(event.target.value);
+  // }
 
-  function handlePlayerChange(event) {
-    setTeamData(null);
-    setErrorMessage(null);
-    setTeamName('');
-    setPlayerName(event.target.value);
-  }
+  // function handlePlayerChange(event) {
+  //   setTeamData(null);
+  //   setErrorMessage(null);
+  //   setTeamName('');
+  //   setPlayerName(event.target.value);
+  // }
 
-  function handleTeamSubmit(event) {
-    event.preventDefault();
-    setErrorMessage(null);
-    setTeamId(teamName);
-  }
+  // function handleTeamSubmit(event) {
+  //   event.preventDefault();
+  //   setErrorMessage(null);
+  //   setTeamId(teamName);
+  // }
 
-  function handlePlayerSubmit(event) {
-    event.preventDefault();
-    setErrorMessage(null);
-    setPlayerFullName(playerName);
-  }
+  // function handlePlayerSubmit(event) {
+  //   event.preventDefault();
+  //   setErrorMessage(null);
+  //   setPlayerFullName(playerName);
+  // }
 
   return (
     <div className="app">
       <h1>Fantasy Hockey Add/Drop Comparison Tool</h1>
-      <form onSubmit={teamName ? handleTeamSubmit : handlePlayerSubmit}>
+      <SearchForm type="team" />
+      {/* <form onSubmit={teamName ? handleTeamSubmit : handlePlayerSubmit}>
         <div className="form">
           <p>Team Name: </p>
           <input
@@ -198,7 +199,7 @@ function Home() {
             Player Search
           </button>
         </div>
-      </form>
+      </form> */}
       {daysLeft && (
         <p>Remaining days left in the fantasy hockey week: {daysLeft}</p>
       )}
