@@ -23,7 +23,6 @@ function Home() {
     )
       .then(res => res.json())
       .then(data => {
-        console.log('data: ', data);
         setRemainingGames(data.totalGames);
       })
       .catch(err =>
