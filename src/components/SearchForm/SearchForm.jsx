@@ -10,8 +10,7 @@ export default function SearchForm({ type }) {
   const [teamName, setTeamName] = useState('');
   const [teamId, setTeamId] = useState('');
   const [fullTeamName, setFullTeamName] = useState('');
-  const { teamNameContext, setTeamNameContext } = useContext(TeamContext);
-  const { teamIdContext, setTeamIdContext } = useContext(TeamContext);
+  const { teamContext, setTeamContext } = useContext(TeamContext);
 
   const START_DATE = '2019-12-10';
   const END_DATE = '2019-12-15';
@@ -60,25 +59,9 @@ export default function SearchForm({ type }) {
         console.log('team: ', team);
 
         if (team[0]) {
-          setTeamNameContext(team[0].name);
-          // setTeamIdContext(team[0].id);
+          setTeamContext({ teamName: team[0].name, teamId: team[0].id});
         }
-
-        // if (team[0]) {
-        //   setFullTeamName(team[0].name);
-        //   fetch(
-        //     `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${team[0].id}&startDate=${START_DATE}&endDate=${END_DATE}`
-        //   )
-        //     .then(res => res.json())
-        //     .then(res => {
-        //       console.log('res: ', res);
-        //       // setTeamData(response.totalGames);
-        //     })
-        // } else if (teamName.length > 0) {
-        //   // setErrorMessage('Did not find that team');
-        // }
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [teamId]);
 
   return (

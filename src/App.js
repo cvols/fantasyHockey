@@ -3,10 +3,10 @@ import { Home } from './pages';
 import { TeamContext } from './context/TeamContext';
 
 export default function App() {
-  const [teamNameContext, setTeamNameContext ] = useState(null);
-  const [teamIdContext, setTeamIdContext] = useState('');
+  const [teamContext, setTeamContext ] = useState('');
+
   return (
-    <TeamContext.Provider value={{ teamNameContext, setTeamNameContext }}>
+    <TeamContext.Provider value={{ teamContext, setTeamContext }}>
       <Home />
     </TeamContext.Provider>
 
