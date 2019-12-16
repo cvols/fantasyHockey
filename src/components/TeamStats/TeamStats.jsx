@@ -1,6 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { TeamContext } from '../../context/TeamContext';
+import { Accordion } from '../../components';
+import './TeamStats.css';
+import devilsLogo from '../images/devilsLogo.png';
+import images from '../images/images.json';
+
+console.log('images: ', images);
 
 TeamStats.propTypes = {};
 
@@ -10,12 +16,12 @@ export default function TeamStats() {
 
   console.log('teamContext: ', teamContext);
 
-  function fetchData(teamId = 1) {
+  function fetchData(teamId) {
     if (gameInfo.length > 0) {
       setGameInfo([]);
     }
 
-    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${teamId}&startDate=2019-12-10&endDate=2019-12-15`)
+    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${teamId}&startDate=2019-12-13&endDate=2019-12-15`)
     .then(res => res.json())
     .then(res => {
       res.dates.map(dates => {
@@ -51,23 +57,29 @@ export default function TeamStats() {
   }
 
   useEffect(() => {
-    fetchData(teamContext.teamId);
+    if (teamContext.teamId) {
+      return fetchData(teamContext.teamId);
+    }
   }, [teamContext.teamId])
 
   return (
     <div>
       {gameInfo && console.log('gameInfo: ', gameInfo)}
-      {teamContext && <p>{teamContext.teamName} Schedule</p>}
+      {teamContext && <p>{teamContext.teamName} Upcoming Schedule</p>}
       {gameInfo && gameInfo.map((info, index) => {
         const { opponent, date, gameTime, venue, isHome } = info;
 
         return (
-          <div key={index}>
-            <p>Opponent: {opponent}</p>
-            <p>Date: {date}</p>
-            <p>Time: {gameTime}</p>
-            <p>{venue}</p>
-            <p>{isHome ? 'Home Team' : 'Away Team'}</p>
+          <div key={index} label={opponent} className="gameBox">
+            <div className="gameBoxLeft">
+              <img src={images[opponent]} alt="Logo" height="100px" width="150px" />
+              <span>{isHome ? 'vs ' : '@ '} {opponent}</span>
+              <span>{venue}</span>
+            </div>
+            <div className="gameBoxRight">
+              <p>Date: {date}</p>
+              <p>Time: {gameTime}</p>
+            </div>
           </div>
         )
       })}

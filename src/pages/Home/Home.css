@@ -9,3 +9,8 @@
 .submitButton {
   margin-left: 10px;
 }
+
+.formBox {
+  display: flex;
+  justify-content: center;;
+}

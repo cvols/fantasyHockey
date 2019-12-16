@@ -1,0 +1,24 @@
+.gameBox {
+  display: flex;
+  flex-direction: row;
+  margin: 5%;
+  box-shadow: 0 0 8px black;
+}
+
+.gameBoxLeft {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  margin: 20px 0;
+}
+
+.gameBoxRight {
+  flex-direction: row;
+  flex: 1;
+  margin: 20px 0;
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+}

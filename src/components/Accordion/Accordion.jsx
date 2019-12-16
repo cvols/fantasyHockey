@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { AccordionSection } from "../";
+import './Accordion.css';
 
 export default function Accordion({ children, allowMultipleOpen }) {
   const [openSections, setOpenSections] = useState('');
@@ -29,7 +30,7 @@ export default function Accordion({ children, allowMultipleOpen }) {
   }
 
   return (
-    <div style={{ border: "2px solid #008f68" }}>
+    <div className="formContainer">
       {children.map((child, index) => (
         <AccordionSection
           key={index}

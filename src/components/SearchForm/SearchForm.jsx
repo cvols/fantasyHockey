@@ -12,7 +12,7 @@ export default function SearchForm({ type }) {
   const [fullTeamName, setFullTeamName] = useState('');
   const { teamContext, setTeamContext } = useContext(TeamContext);
 
-  const START_DATE = '2019-12-10';
+  const START_DATE = '2019-12-13';
   const END_DATE = '2019-12-15';
 
   function handleTeamSubmit(event) {
@@ -46,7 +46,8 @@ export default function SearchForm({ type }) {
   // find all the teams to get their respective teamId
   // then find remaining games left by teamId
   useEffect(() => {
-    fetch(`https://statsapi.web.nhl.com/api/v1/teams`)
+    if (teamId) {
+      fetch(`https://statsapi.web.nhl.com/api/v1/teams`)
       .then(res => res.json())
       .then(async res => {
         console.log('res: ', res)
@@ -62,6 +63,7 @@ export default function SearchForm({ type }) {
           setTeamContext({ teamName: team[0].name, teamId: team[0].id});
         }
       });
+    }
   }, [teamId]);
 
   return (
