@@ -21,7 +21,7 @@ export default function TeamStats() {
       setGameInfo([]);
     }
 
-    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${teamId}&startDate=2019-12-13&endDate=2019-12-15`)
+    fetch(`https://statsapi.web.nhl.com/api/v1/schedule?teamId=${teamId}&startDate=2019-12-19&endDate=2019-12-22`)
     .then(res => res.json())
     .then(res => {
       res.dates.map(dates => {
