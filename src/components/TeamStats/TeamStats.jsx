@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { TeamContext } from '../../context/TeamContext';
 import { Accordion } from '../../components';
 import './TeamStats.css';
-import devilsLogo from '../images/devilsLogo.png';
 import images from '../images/images.json';
 
 console.log('images: ', images);
