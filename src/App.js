@@ -3,13 +3,13 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 import { Navbar } from './components';
 import { Home, FantasyHockey, Gambling } from './pages';
-import { TeamContext } from './context/TeamContext';
+import { Context } from './context/Context';
 
 export default function App() {
-  const [teamContext, setTeamContext ] = useState('');
+  const [context, setContext ] = useState('');
 
   return (
-    <TeamContext.Provider value={{ teamContext, setTeamContext }}>
+    <Context.Provider value={{ context, setContext }}>
       <Router>
         <Navbar />
           <Switch>
@@ -18,6 +18,6 @@ export default function App() {
             <Route path="/gambling" component={Gambling} />
           </Switch>
       </Router>
-    </TeamContext.Provider>
+    </Context.Provider>
   )
 }

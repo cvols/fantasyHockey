@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { TeamContext } from '../../context/TeamContext';
+import { Context } from '../../context/Context';
 import { Accordion } from '../../components';
 import './TeamStats.css';
 import images from '../images/images.json';
@@ -11,9 +11,9 @@ TeamStats.propTypes = {};
 
 export default function TeamStats() {
   const [gameInfo, setGameInfo] = useState([]);
-  const { teamContext, setTeamContext } = useContext(TeamContext);
+  const { context, setContext } = useContext(Context);
 
-  console.log('teamContext: ', teamContext);
+  console.log('context: ', context);
 
   function fetchData(teamId) {
     if (gameInfo.length > 0) {
@@ -31,7 +31,7 @@ export default function TeamStats() {
         obj.date = dates.date;
 
         dates.games.map(games => {
-          if (games.teams.home.team.name === teamContext.teamName) {
+          if (games.teams.home.team.name === context.teamName) {
             console.log('home team');
             obj = {
               ...obj,
@@ -56,15 +56,15 @@ export default function TeamStats() {
   }
 
   useEffect(() => {
-    if (teamContext.teamId) {
-      return fetchData(teamContext.teamId);
+    if (context.teamId) {
+      return fetchData(context.teamId);
     }
-  }, [teamContext.teamId])
+  }, [context.teamId])
 
   return (
     <div>
       {gameInfo && console.log('gameInfo: ', gameInfo)}
-      {teamContext && <p>{teamContext.teamName} Upcoming Schedule</p>}
+      {context && <p>{context.teamName} Upcoming Schedule</p>}
       {gameInfo && gameInfo.map((info, index) => {
         const { opponent, date, gameTime, venue, isHome } = info;
 

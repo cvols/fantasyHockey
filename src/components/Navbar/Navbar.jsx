@@ -20,8 +20,9 @@ export default function DenseAppBar() {
     <div className={classes.root}>
       <AppBar position="static">
         <Toolbar variant="dense">
-          <Link to="/">
+          <Link to="/" className={classes.link}>
             {/* <img src={} alt="Degenerate Hockey Helper" /> */}
+            Home
            </Link>
           <Link to ="/fantasyHockey" className={classes.link}>
             Fantasy Hockey

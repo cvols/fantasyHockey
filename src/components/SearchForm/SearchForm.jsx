@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { TeamContext } from '../../context/TeamContext';
+import { Context } from '../../context/Context';
 
 SearchForm.propTypes = {
   type: PropTypes.string.isRequired,
@@ -10,7 +10,7 @@ export default function SearchForm({ type }) {
   const [teamName, setTeamName] = useState('');
   const [teamId, setTeamId] = useState('');
   const [fullTeamName, setFullTeamName] = useState('');
-  const { teamContext, setTeamContext } = useContext(TeamContext);
+  const { context, setContext } = useContext(Context);
 
   const START_DATE = '2019-12-13';
   const END_DATE = '2019-12-15';
@@ -60,7 +60,7 @@ export default function SearchForm({ type }) {
         console.log('team: ', team);
 
         if (team[0]) {
-          setTeamContext({ teamName: team[0].name, teamId: team[0].id});
+          setContext({ teamName: team[0].name, teamId: team[0].id});
         }
       });
     }
