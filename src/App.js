@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Home } from './pages';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
+import { Navbar } from './components';
+import { Home, FantasyHockey, Gambling } from './pages';
 import { TeamContext } from './context/TeamContext';
 
 export default function App() {
@@ -7,8 +10,14 @@ export default function App() {
 
   return (
     <TeamContext.Provider value={{ teamContext, setTeamContext }}>
-      <Home />
+      <Router>
+        <Navbar />
+          <Switch>
+            <Route exact path="/" component={Home} />
+            <Route path="/fantasyHockey" component={FantasyHockey} />
+            <Route path="/gambling" component={Gambling} />
+          </Switch>
+      </Router>
     </TeamContext.Provider>
-
   )
 }
