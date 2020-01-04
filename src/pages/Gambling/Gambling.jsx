@@ -1,5 +1,16 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
+
+import { Context } from '../../context/Context';
 
 export default function Gambling() {
-  return <div>gambling hockey page</div>
+  const { context, setContext } = useContext(Context);
+
+  useEffect(() => {
+    setContext({
+      ...context,
+      pathname: window.location.pathname
+    })
+  }, []);
+
+  return <div>Degenerate Gambling Hockey Page</div>
 }

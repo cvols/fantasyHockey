@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+
+import { Context } from '../../context/Context';
 import { Accordion, TeamStats, SearchForm } from '../../components';
 import './FantasyHockey.css';
 
 export default function FantasyHockey() {
+  const { context, setContext } = useContext(Context);
   const [teamName, setTeamName] = useState('');
   const [fullTeamName, setFullTeamName] = useState();
   const [teamData, setTeamData] = useState();
@@ -15,6 +18,13 @@ export default function FantasyHockey() {
 
   const START_DATE = getStartDate();
   const END_DATE = '2019-12-15';
+
+  useEffect(() => {
+    setContext({
+      ...context,
+      pathname: window.location.pathname
+    })
+  }, []);
 
   // get remaining games left in the week
   useEffect(() => {
