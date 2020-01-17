@@ -17,7 +17,7 @@ export default function FantasyHockey() {
   const [playerFullName, setPlayerFullName] = useState('');
 
   const START_DATE = getStartDate();
-  const END_DATE = '2019-12-15';
+  const END_DATE = '2020-01-19';
 
   useEffect(() => {
     setContext({
@@ -57,7 +57,7 @@ export default function FantasyHockey() {
                     const currentTeamName = teamName.currentTeam.name;
 
                     fetch(
-                      `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${START_DATE}&endDate=2019-11-24`
+                      `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${START_DATE}&endDate=${END_DATE}`
                     )
                       .then(res => res.json())
                       .then(data => {
