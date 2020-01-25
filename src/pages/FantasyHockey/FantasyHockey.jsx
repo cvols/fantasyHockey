@@ -1,8 +1,14 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import axios from 'axios';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
 
+import { Accordion, SearchForm, TeamStats } from '../../components';
 import { Context } from '../../context/Context';
-import { Accordion, TeamStats, SearchForm } from '../../components';
 import './FantasyHockey.css';
+import { getStartDate } from '../../helpers';
 
 export default function FantasyHockey() {
   const { context, setContext } = useContext(Context);
@@ -16,75 +22,18 @@ export default function FantasyHockey() {
   const [playerName, setPlayerName] = useState('');
   const [playerFullName, setPlayerFullName] = useState('');
 
-  const START_DATE = getStartDate();
-  const END_DATE = '2020-01-19';
+  const END_DATE = '2020-02-02';
 
   useEffect(() => {
+    // get start date and pathname
+    // to set to context to use throughout the app
     setContext({
       ...context,
+      startDate: getStartDate(),
+      endDate: END_DATE,
       pathname: window.location.pathname
-    })
-  }, []);
+    });
 
-  // get remaining games left in the week
-  useEffect(() => {
-    fetch(
-      `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${START_DATE}&endDate=${END_DATE}`
-    )
-      .then(res => res.json())
-      .then(data => {
-        setRemainingGames(data.totalGames);
-      })
-      .catch(err =>
-        setRemainingGames(`An error occurred: ${err.message || err}`)
-      );
-  }, [START_DATE, END_DATE]);
-
-  useEffect(() => {
-    fetch(`https://statsapi.web.nhl.com/api/v1/teams/?expand=team.roster`)
-      .then(res => res.json())
-      .then(data => {
-        data.teams.find(roster => {
-          roster.roster.roster.find(player => {
-            if (playerName === player.person.fullName) {
-              const playerId = player.person.id;
-
-              fetch(`https://statsapi.web.nhl.com/api/v1/people/${playerId}`)
-                .then(res => res.json())
-                .then(data => {
-                  data.people.find(teamName => {
-                    const currentTeamId = teamName.currentTeam.id;
-                    const currentTeamName = teamName.currentTeam.name;
-
-                    fetch(
-                      `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${START_DATE}&endDate=${END_DATE}`
-                    )
-                      .then(res => res.json())
-                      .then(data => {
-                        setFullTeamName(currentTeamName);
-                        setTeamData(data.totalGames);
-                      });
-
-                    return null;
-                  });
-                });
-            }
-
-            return null;
-          });
-
-          return null;
-        });
-      })
-      .catch(err => console.log('err: ', err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playerFullName]);
-
-  function getStartDate() {
-    return new Date().toJSON().slice(0, 10);
-  }
-
-  useEffect(() => {
     const today = new Date().toString();
     const day = today.split(' ');
 
@@ -113,34 +62,92 @@ export default function FantasyHockey() {
     }
   }, []);
 
+  // get remaining games left in the week
+  useEffect(() => {
+    axios(
+      `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${context.startDate}&endDate=${context.endDate}`
+    )
+      .then(data => {
+        setRemainingGames(data.data.totalGames);
+      })
+      .catch(err =>
+        setRemainingGames(`An error occurred: ${err.message || err}`)
+      );
+  }, [context.startDate, context.endDate]);
+
+  useEffect(() => {
+    axios(`https://statsapi.web.nhl.com/api/v1/teams/?expand=team.roster`)
+      .then(data => {
+        console.log('data: ', data);
+        data.data.teams.find(roster => {
+          roster.roster.roster.find(player => {
+            if (playerName === player.person.fullName) {
+              const playerId = player.person.id;
+
+              axios(
+                `https://statsapi.web.nhl.com/api/v1/people/${playerId}`
+              ).then(data => {
+                data.data.people.find(teamName => {
+                  const currentTeamId = teamName.currentTeam.id;
+                  const currentTeamName = teamName.currentTeam.name;
+
+                  axios(
+                    `https://statsapi.web.nhl.com/api/v1/schedule?teamId=${currentTeamId}&startDate=${context.startDate}&endDate=${context.endDate}`
+                  ).then(data => {
+                    setFullTeamName(currentTeamName);
+                    setTeamData(data.data.totalGames);
+                  });
+
+                  return null;
+                });
+              });
+            }
+
+            return null;
+          });
+
+          return null;
+        });
+      })
+      .catch(err => console.log('err: ', err));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playerFullName]);
+
   return (
-    <div className="app">
-      <h1>Fantasy Hockey Add/Drop Comparison Tool</h1>
-      <div className="formBox">
-      <Accordion allowMultipleOpen>
-        <div label="Team Search" isOpen>
+    <Container className="container">
+      <Typography variant="h4" gutterBottom>
+        Fantasy Hockey Add/Drop Comparison Tool
+      </Typography>
+      <Divider className="divider" />
+      <Grid container justify="center">
         <SearchForm type="team" />
-        </div>
-        <div label="Player Search">
-        <SearchForm type="player" />
-        </div>
-      </Accordion>
-        {/* <SearchForm type="team" />
-        <SearchForm type="player" /> */}
-      </div>
-      {daysLeft && (
-        <p>Remaining days left in the fantasy hockey week: {daysLeft}</p>
-      )}
-      {remainingGames && (
-        <p>Remaining NHL games left in the week: {remainingGames}</p>
-      )}
-      {teamData && (
-        <p>
-          {fullTeamName} remaining games left in the week: {teamData}
-        </p>
-      )}
-      {errorMessage && <p>{errorMessage}</p>}
-      <TeamStats />
-    </div>
+      </Grid>
+      <Grid container>
+        <Grid container>
+          <Typography variant="body1">
+            Remaining days left in the fantasy hockey week:{' '}
+            {daysLeft && daysLeft}
+          </Typography>
+        </Grid>
+        <Grid container>
+          <Typography variant="body1">
+            Remaining NHL games left in the week:{' '}
+            {remainingGames && remainingGames}
+          </Typography>
+        </Grid>
+        <Grid container>
+          <Typography variant="body1">
+            {fullTeamName} remaining games left in the week: {teamData}
+          </Typography>
+        </Grid>
+        <Grid container></Grid>
+        {errorMessage && (
+          <Grid container>
+            <Typography variant="body1">{errorMessage}</Typography>
+          </Grid>
+        )}
+        <TeamStats />
+      </Grid>
+    </Container>
   );
 }

@@ -1,5 +1,11 @@
-.app {
-  text-align: center;
+.container {
+  margin-top: 25px;
+}
+
+.divider {
+  margin-bottom: 10px !important;
+  background-color: cornflowerblue !important;
+  height: 2px !important;
 }
 
 .input {
@@ -8,9 +14,4 @@
 
 .submitButton {
   margin-left: 10px;
-}
-
-.formBox {
-  display: flex;
-  justify-content: center;
 }

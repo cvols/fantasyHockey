@@ -1,19 +1,21 @@
 import React, { useState, useEffect, useContext } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+
 import { Context } from '../../context/Context';
 
 SearchForm.propTypes = {
-  type: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired
 };
 
 export default function SearchForm({ type }) {
+  const { context, setContext } = useContext(Context);
   const [teamName, setTeamName] = useState('');
   const [teamId, setTeamId] = useState('');
   const [fullTeamName, setFullTeamName] = useState('');
-  const { context, setContext } = useContext(Context);
-
-  const START_DATE = '2019-12-13';
-  const END_DATE = '2019-12-15';
 
   function handleTeamSubmit(event) {
     console.log('clicked');
@@ -47,11 +49,10 @@ export default function SearchForm({ type }) {
   // then find remaining games left by teamId
   useEffect(() => {
     if (teamId) {
-      fetch(`https://statsapi.web.nhl.com/api/v1/teams`)
-      .then(res => res.json())
-      .then(async res => {
-        console.log('res: ', res)
-        const team = await res.teams.filter(team =>
+      axios(`https://statsapi.web.nhl.com/api/v1/teams`).then(async res => {
+        console.log('res: ', res);
+        const team = await res.data.teams.filter(
+          team =>
             team.locationName === teamName ||
             team.abbreviation === teamName ||
             team.name === teamName ||
@@ -60,31 +61,24 @@ export default function SearchForm({ type }) {
         console.log('team: ', team);
 
         if (team[0]) {
-          setContext({ teamName: team[0].name, teamId: team[0].id});
+          setContext({ teamName: team[0].name, teamId: team[0].id });
         }
       });
     }
   }, [teamId]);
 
   return (
-      <form onSubmit={type === 'team' ? handleTeamSubmit : handlePlayerSubmit}>
-        <div className="form">
-          <p>Team Name: </p>
-          <input
-            className="input"
-            type="text"
-            name="teamName"
-            value={teamName}
-            onChange={type === 'team' ? handleTeamChange : handlePlayerChange}
-          />
-          <button
-            className="submitButton"
-            type="button"
-            onClick={type === 'team' ? handleTeamSubmit : handlePlayerSubmit}
-          >
-            Team Search
-          </button>
-        </div>
-      </form>
-  )
+    <form onSubmit={type === 'team' ? handleTeamSubmit : handlePlayerSubmit}>
+      <Grid container>
+        <TextField
+          id="teamSearch"
+          label="SEARCH BY TEAM NAME"
+          variant="outlined"
+          value={teamName}
+          onChange={handleTeamChange}
+        />
+        <Button variant="container">Search</Button>
+      </Grid>
+    </form>
+  );
 }
